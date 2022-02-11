@@ -3,19 +3,23 @@ package com.santimattius.list
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
-import com.santimattius.list.ui.screen.HomeScreen
-import com.santimattius.list.ui.screen.TodoViewModel
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.material.ExperimentalMaterialApi
+import com.santimattius.list.ui.navigation.Navigation
+import dagger.hilt.android.AndroidEntryPoint
 
+@ExperimentalFoundationApi
+@ExperimentalMaterialApi
+@ExperimentalAnimationApi
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-    private val todoViewModel by viewModels<TodoViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             TodoListApp {
-                HomeScreen(todoViewModel)
+                Navigation()
             }
         }
     }

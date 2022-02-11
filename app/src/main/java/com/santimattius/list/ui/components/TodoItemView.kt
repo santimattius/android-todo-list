@@ -1,5 +1,6 @@
 package com.santimattius.list.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -13,14 +14,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.santimattius.list.TodoListApp
+import com.santimattius.list.domain.TodoItem
+import java.util.*
 
 @Composable
-fun TodoItemView(modifier: Modifier = Modifier) {
+fun TodoItemView(
+    item: TodoItem,
+    onClick: (TodoItem) -> Unit = {},
+) {
     Card(
-        modifier = modifier
+        modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 4.dp)
             .fillMaxSize()
-            .wrapContentHeight(align = Alignment.Top),
+            .wrapContentHeight(align = Alignment.Top)
+            .clickable { onClick(item) },
         backgroundColor = MaterialTheme.colors.primary
     ) {
         Column(
@@ -28,10 +35,11 @@ fun TodoItemView(modifier: Modifier = Modifier) {
                 .padding(16.dp)
         ) {
             Text(
-                text = "Title"
+                text = item.title
             )
             Text(
-                text = "Description"
+                text = item.description,
+                style = MaterialTheme.typography.subtitle2
             )
         }
     }
@@ -41,6 +49,12 @@ fun TodoItemView(modifier: Modifier = Modifier) {
 @Composable
 fun TodoItemViewPreview() {
     TodoListApp {
-        TodoItemView()
+        TodoItemView(
+            TodoItem(
+                id = UUID.randomUUID(),
+                title = "Title",
+                description = "Description",
+            ),
+        )
     }
 }
