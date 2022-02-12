@@ -10,8 +10,8 @@ sealed class Route(
 
     object Splash : Route(definition = "splash")
     object TodoList : Route(definition = "todo")
-    object TodoItem : Route(definition = "todolis", arguments = listOf(NavArguments.Id)) {
-        fun createRoute(id: Int) = "$definition/$id"
+    object TodoItem : Route(definition = "todo", arguments = listOf(NavArguments.Id)) {
+        fun createRoute(id: String) = "$definition/$id"
     }
 
     val route = run {
@@ -28,5 +28,5 @@ sealed class Route(
 
 
 enum class NavArguments(val key: String, val navType: NavType<*>) {
-    Id(key = "id", navType = NavType.IntType);
+    Id(key = "id", navType = NavType.StringType);
 }

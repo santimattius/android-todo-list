@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
+import com.santimattius.list.R
 import kotlinx.coroutines.delay
 
 @Composable
@@ -39,7 +40,7 @@ fun SplashScreen(navigate: () -> Unit) {
         modifier = Modifier.fillMaxSize()
     ) {
         Image(
-            painter = painterResource(id = android.R.drawable.alert_dark_frame),
+            painter = painterResource(id = R.drawable.ic_splash),
             contentDescription = "Logo",
             modifier = Modifier.scale(scale.value)
         )

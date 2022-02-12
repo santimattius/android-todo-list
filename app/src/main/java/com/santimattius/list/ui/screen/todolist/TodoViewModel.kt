@@ -1,4 +1,4 @@
-package com.santimattius.list.ui.screen
+package com.santimattius.list.ui.screen.todolist
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,11 +33,6 @@ class TodoViewModel @Inject constructor(
             val items = getTodoItems()
             state = state.copy(isLoading = false, data = items)
         }
-    }
-
-    // event: addItem
-    fun addItem(item: TodoItem) {
-
     }
 
     // event: removeItem

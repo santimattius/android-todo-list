@@ -1,6 +1,7 @@
 package com.santimattius.list.di
 
 import com.santimattius.list.data.TodoListRepository
+import com.santimattius.list.domain.FindTodoItem
 import com.santimattius.list.domain.GetTodoItems
 import dagger.Module
 import dagger.Provides
@@ -15,4 +16,8 @@ class UiModule {
     @Provides
     @ViewModelScoped
     fun provideGetTodoItems(repository: TodoListRepository) = GetTodoItems(repository)
+
+    @Provides
+    @ViewModelScoped
+    fun provideFindTodoItem(repository: TodoListRepository) = FindTodoItem(repository)
 }

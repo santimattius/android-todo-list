@@ -1,4 +1,4 @@
-package com.santimattius.list.ui.screen
+package com.santimattius.list.ui.screen.todolist
 
 import com.santimattius.list.domain.TodoItem
 

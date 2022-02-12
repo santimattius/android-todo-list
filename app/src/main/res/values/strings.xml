@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">android-todo-list</string>
+    <string name="app_name">Todo List</string>
+    <string name="text_input_label_title">Title</string>
+    <string name="text_input_label_description">Description</string>
 </resources>

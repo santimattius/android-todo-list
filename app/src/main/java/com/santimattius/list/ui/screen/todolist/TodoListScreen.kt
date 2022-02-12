@@ -1,33 +1,37 @@
-package com.santimattius.list.ui.screen
+package com.santimattius.list.ui.screen.todolist
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
+import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.santimattius.list.TodoListApp
 import com.santimattius.list.data.TodoListRepository
 import com.santimattius.list.domain.GetTodoItems
-import com.santimattius.list.ui.components.TodoItemView
-
+import com.santimattius.list.domain.TodoItem
+import com.santimattius.list.ui.components.*
 
 @Composable
-fun HomeScreen(
-    todoViewModel: TodoViewModel = viewModel()
+fun TodoListScreen(
+    todoViewModel: TodoViewModel = hiltViewModel(),
+    onTodoItemClick: (TodoItem) -> Unit = {},
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text(text = "Top bar") })
+            TodoAppBar(title = "Todo")
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { }
+                onClick = {
+                    onTodoItemClick(TodoItem.empty())
+                }
             ) {
                 Icon(
                     imageVector = Icons.Filled.Add,
@@ -38,7 +42,8 @@ fun HomeScreen(
     ) { paddingValues ->
         TodoListContent(
             todoViewModel = todoViewModel,
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier.padding(paddingValues),
+            onTodoItemClick = onTodoItemClick
         )
     }
 }
@@ -47,6 +52,7 @@ fun HomeScreen(
 fun TodoListContent(
     todoViewModel: TodoViewModel,
     modifier: Modifier = Modifier,
+    onTodoItemClick: (TodoItem) -> Unit = {},
 ) {
     with(todoViewModel.state) {
         when {
@@ -58,43 +64,10 @@ fun TodoListContent(
             isEmpty -> EmptyView(modifier = modifier)
             else -> LazyColumn(modifier = modifier) {
                 items(data, key = { it.id }) { item ->
-                    TodoItemView(item)
+                    TodoItemView(item, onTodoItemClick)
                 }
             }
         }
-    }
-}
-
-@Composable
-fun EmptyView(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text = "Load icon")
-        Text(text = "Create new todo item")
-    }
-}
-
-@Composable
-fun ErrorView(message: String, modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(message)
-    }
-}
-
-@Composable
-fun LoadingIndicator(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator()
     }
 }
 
@@ -103,6 +76,6 @@ fun LoadingIndicator(modifier: Modifier = Modifier) {
 @Composable
 fun MainScreenPreview() {
     TodoListApp {
-        HomeScreen(TodoViewModel(GetTodoItems(TodoListRepository())))
+        TodoListScreen(TodoViewModel(GetTodoItems(TodoListRepository())))
     }
 }
