@@ -40,4 +40,13 @@ class TodoViewModel @Inject constructor(
 
     }
 
+    fun refresh() {
+        state = state.copy(isRefreshing = true)
+        job?.cancel()
+        job = viewModelScope.launch {
+            val items = getTodoItems()
+            state = state.copy(isRefreshing = false, data = items)
+        }
+    }
+
 }

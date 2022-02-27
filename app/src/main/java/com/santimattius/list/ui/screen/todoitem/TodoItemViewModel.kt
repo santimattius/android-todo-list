@@ -6,9 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.santimattius.list.domain.FindTodoItem
-import com.santimattius.list.domain.TodoItem
+import com.santimattius.list.domain.*
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.util.*
@@ -17,13 +17,19 @@ import javax.inject.Inject
 @HiltViewModel
 class TodoItemViewModel @Inject constructor(
     private val findTodoItem: FindTodoItem,
-    private val savedStateHandle: SavedStateHandle,
+    private val addTodoItem: AddTodoItem,
+    private val updateTodoItem: UpdateTodoItem,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private var job: Job? = null
 
     var state by mutableStateOf(TodoItemScreenState.initial())
         private set
+
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, _ ->
+        //TODO: launch error
+    }
 
     init {
         savedStateHandle.get<String>("id")?.let { id ->
@@ -34,7 +40,7 @@ class TodoItemViewModel @Inject constructor(
     private fun load(id: String) {
         job?.cancel()
         state = state.copy(isLoading = true)
-        job = viewModelScope.launch {
+        job = viewModelScope.launch(coroutineExceptionHandler) {
             val item = findTodoItem(id)
             state = if (item == null) {
                 state.copy(
@@ -58,5 +64,24 @@ class TodoItemViewModel @Inject constructor(
 
     private fun showError() {
         state = state.copy(isLoading = false, withError = true)
+    }
+
+    fun save() {
+        val todoItem = state.todoItem
+        if (todoItem.isEmpty()) {
+            //TODO: show empty message
+        } else {
+            job?.cancel()
+            job = viewModelScope.launch(coroutineExceptionHandler) {
+                when (state.actionType) {
+                    ActionType.EDIT -> {
+                        updateTodoItem(todoItem)
+                    }
+                    ActionType.CREATE -> {
+                        addTodoItem(todoItem)
+                    }
+                }
+            }
+        }
     }
 }

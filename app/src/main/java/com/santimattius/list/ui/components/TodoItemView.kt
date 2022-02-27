@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.santimattius.list.TodoListApp
 import com.santimattius.list.domain.TodoItem
+import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
@@ -40,6 +41,11 @@ fun TodoItemView(
             Text(
                 text = item.description,
                 style = MaterialTheme.typography.subtitle2
+            )
+            //TODO: move format
+            Text(
+                text = SimpleDateFormat("dd-MM-yyyy").format(item.date),
+                style = MaterialTheme.typography.body2
             )
         }
     }

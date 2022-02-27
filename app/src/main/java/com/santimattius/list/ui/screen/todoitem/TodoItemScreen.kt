@@ -3,6 +3,8 @@ package com.santimattius.list.ui.screen.todoitem
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,7 +27,13 @@ fun TodoItemDetailScreen(
         topBar = {
             TodoAppBar(
                 title = "",
-                backAction = AppBarItem.back(onBackAction)
+                backAction = AppBarItem.back(onBackAction),
+                actions = listOf(
+                    AppBarItem(icon = Icons.Default.Save) {
+                        todoItemViewModel.save()
+                        onBackAction()
+                    }
+                )
             )
         }
     ) { innerPadding ->

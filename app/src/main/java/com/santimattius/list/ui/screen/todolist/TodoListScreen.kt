@@ -12,6 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.santimattius.list.TodoListApp
 import com.santimattius.list.data.TodoListRepository
 import com.santimattius.list.domain.GetTodoItems
@@ -62,9 +64,14 @@ fun TodoListContent(
                 modifier = modifier
             )
             isEmpty -> EmptyView(modifier = modifier)
-            else -> LazyColumn(modifier = modifier) {
-                items(data, key = { it.id }) { item ->
-                    TodoItemView(item, onTodoItemClick)
+            else -> SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing),
+                onRefresh = {
+                    todoViewModel.refresh()
+                }) {
+                LazyColumn(modifier = modifier) {
+                    items(data, key = { it.id }) { item ->
+                        TodoItemView(item, onTodoItemClick)
+                    }
                 }
             }
         }
