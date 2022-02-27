@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.santimattius.list.TodoListApp
 import com.santimattius.list.domain.TodoItem
@@ -19,17 +20,20 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun TodoItemView(
+fun TodoItemCard(
     item: TodoItem,
+    modifier: Modifier = Modifier,
+    elevation: Dp = 0.dp,
     onClick: (TodoItem) -> Unit = {},
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .padding(horizontal = 16.dp, vertical = 4.dp)
             .fillMaxSize()
             .wrapContentHeight(align = Alignment.Top)
             .clickable { onClick(item) },
-        backgroundColor = MaterialTheme.colors.primary
+        backgroundColor = MaterialTheme.colors.primary,
+        elevation = elevation
     ) {
         Column(
             modifier = Modifier
@@ -55,7 +59,7 @@ fun TodoItemView(
 @Composable
 fun TodoItemViewPreview() {
     TodoListApp {
-        TodoItemView(
+        TodoItemCard(
             TodoItem(
                 id = UUID.randomUUID(),
                 title = "Title",
