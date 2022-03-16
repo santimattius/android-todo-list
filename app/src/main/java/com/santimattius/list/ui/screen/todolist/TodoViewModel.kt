@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.santimattius.list.domain.GetTodoItems
+import com.santimattius.list.domain.RemoveTodoItem
 import com.santimattius.list.domain.TodoItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -15,6 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class TodoViewModel @Inject constructor(
     private val getTodoItems: GetTodoItems,
+    private val removeTodoItem: RemoveTodoItem,
 ) : ViewModel() {
 
     private var job: Job? = null
@@ -35,9 +37,14 @@ class TodoViewModel @Inject constructor(
         }
     }
 
-    // event: removeItem
     fun removeItem(item: TodoItem) {
-
+        job?.cancel()
+        job = viewModelScope.launch {
+            if (removeTodoItem(item)) {
+                val items = getTodoItems()
+                state = state.copy(isLoading = false, data = items)
+            }
+        }
     }
 
     fun refresh() {

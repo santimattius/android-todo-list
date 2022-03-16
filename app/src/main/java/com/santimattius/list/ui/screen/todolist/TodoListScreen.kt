@@ -1,14 +1,18 @@
 package com.santimattius.list.ui.screen.todolist
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -29,8 +33,10 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.santimattius.list.TodoListApp
 import com.santimattius.list.data.TodoListRepository
 import com.santimattius.list.domain.GetTodoItems
+import com.santimattius.list.domain.RemoveTodoItem
 import com.santimattius.list.domain.TodoItem
 import com.santimattius.list.ui.components.*
+import kotlinx.coroutines.delay
 
 @ExperimentalMaterialApi
 @Composable
@@ -58,7 +64,8 @@ fun TodoListScreen(
         TodoListContent(
             todoViewModel = todoViewModel,
             modifier = Modifier.padding(paddingValues),
-            onTodoItemClick = onTodoItemClick
+            onTodoItemClick = onTodoItemClick,
+            onTodoItemDelete = todoViewModel::removeItem
         )
     }
 }
@@ -69,6 +76,7 @@ fun TodoListContent(
     todoViewModel: TodoViewModel,
     modifier: Modifier = Modifier,
     onTodoItemClick: (TodoItem) -> Unit = {},
+    onTodoItemDelete: (TodoItem) -> Unit = {},
 ) {
     with(todoViewModel.state) {
         when {
@@ -82,9 +90,24 @@ fun TodoListContent(
                 onRefresh = {
                     todoViewModel.refresh()
                 }) {
+//                var columnAppeared by remember { mutableStateOf(false) }
+//                LaunchedEffect(Unit) {
+//                    columnAppeared = true
+//                }
                 LazyColumn(modifier = modifier) {
-                    items(data, key = { it.id }) { item ->
-                        TodoListContentItem(item, onTodoItemClick)
+                    itemsIndexed(
+                        items = data,
+                        key = { _, item ->
+                            item.hashCode()
+                        }
+                    ) { _, item ->
+                        TodoListContentItem(
+                            item = item,
+                            columnAppeared = true,
+                            onTodoItemClick = onTodoItemClick,
+                            onTodoItemDelete = onTodoItemDelete
+                        )
+
                     }
                 }
             }
@@ -96,71 +119,91 @@ fun TodoListContent(
 @Composable
 private fun TodoListContentItem(
     item: TodoItem,
+    columnAppeared: Boolean,
     onTodoItemClick: (TodoItem) -> Unit,
+    onTodoItemDelete: (TodoItem) -> Unit,
 ) {
-    var unread by remember { mutableStateOf(false) }
-    val dismissState = rememberDismissState(
-        confirmStateChange = {
-            //TODO: remove item
-            if (it == DismissValue.DismissedToEnd) unread = !unread
-            it != DismissValue.DismissedToEnd
-        }
-    )
-    SwipeToDismiss(
-        state = dismissState,
-        modifier = Modifier.padding(vertical = 4.dp),
-        directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
-        dismissThresholds = { direction ->
-            FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.25f else 0.5f)
-        },
-        background = {
-            val direction = dismissState.dismissDirection ?: return@SwipeToDismiss
-            val color by animateColorAsState(
-                when (dismissState.targetValue) {
-                    DismissValue.Default -> LightGray
-                    DismissValue.DismissedToEnd -> Green
-                    DismissValue.DismissedToStart -> Red
-                }
+    val dismissState = rememberDismissState()
+    val dismissDirection = dismissState.dismissDirection
+    val isDismissed = dismissState.isDismissed(DismissDirection.EndToStart)
+    if (isDismissed && dismissDirection == DismissDirection.EndToStart) {
+//        LaunchedEffect(Unit) {
+//            delay(300)
+//
+//        }
+        onTodoItemDelete(item)
+    }
+    //var itemAppeared by remember { mutableStateOf(!columnAppeared) }
+//    LaunchedEffect(Unit) {
+//        itemAppeared = true
+//    }
+    AnimatedVisibility(
+        visible = !isDismissed,
+        exit = shrinkVertically(
+            animationSpec = tween(
+                durationMillis = 300,
             )
-            val alignment = when (direction) {
-                DismissDirection.StartToEnd -> Alignment.CenterStart
-                DismissDirection.EndToStart -> Alignment.CenterEnd
-            }
-            val icon = when (direction) {
-                DismissDirection.StartToEnd -> Icons.Default.Done
-                DismissDirection.EndToStart -> Icons.Default.Delete
-            }
-            val scale by animateFloatAsState(
-                if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f
+        ),
+        enter = expandVertically(
+            animationSpec = tween(
+                durationMillis = 300
             )
-
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .background(color)
-                    .padding(horizontal = 20.dp),
-                contentAlignment = alignment
-            ) {
-                Icon(
-                    icon,
-                    contentDescription = "Localized description",
-                    modifier = Modifier.scale(scale)
+        )
+    ) {
+        SwipeToDismiss(
+            state = dismissState,
+            modifier = Modifier.padding(vertical = 4.dp),
+            directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
+            dismissThresholds = { direction ->
+                FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.25f else 0.5f)
+            },
+            background = {
+                val direction = dismissState.dismissDirection ?: return@SwipeToDismiss
+                val color by animateColorAsState(
+                    when (dismissState.targetValue) {
+                        DismissValue.Default -> LightGray
+                        DismissValue.DismissedToEnd -> Green
+                        DismissValue.DismissedToStart -> Red
+                    }
                 )
-            }
-        },
-        dismissContent = {
-            TodoItemCard(
-                item = item,
-                elevation = animateDpAsState(
-                    if (dismissState.dismissDirection != null) 4.dp else 0.dp,
-                ).value,
-            ) {
-                onTodoItemClick(it)
-            }
-        }
-    )
+                val alignment = when (direction) {
+                    DismissDirection.StartToEnd -> Alignment.CenterStart
+                    DismissDirection.EndToStart -> Alignment.CenterEnd
+                }
+                val icon = when (direction) {
+                    DismissDirection.StartToEnd -> Icons.Default.Done
+                    DismissDirection.EndToStart -> Icons.Default.Delete
+                }
+                val scale by animateFloatAsState(
+                    if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f
+                )
 
-
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                        .background(color)
+                        .padding(horizontal = 20.dp),
+                    contentAlignment = alignment
+                ) {
+                    Icon(
+                        icon,
+                        contentDescription = "Localized description",
+                        modifier = Modifier.scale(scale)
+                    )
+                }
+            },
+            dismissContent = {
+                TodoItemCard(
+                    item = item,
+                    elevation = animateDpAsState(
+                        if (dismissState.dismissDirection != null) 4.dp else 0.dp,
+                    ).value,
+                ) {
+                    onTodoItemClick(it)
+                }
+            }
+        )
+    }
 }
 
 @ExperimentalMaterialApi
@@ -168,6 +211,10 @@ private fun TodoListContentItem(
 @Composable
 fun MainScreenPreview() {
     TodoListApp {
-        TodoListScreen(TodoViewModel(GetTodoItems(TodoListRepository())))
+        TodoListScreen(
+            todoViewModel = TodoViewModel(
+                getTodoItems = GetTodoItems(repository = TodoListRepository()),
+                removeTodoItem = RemoveTodoItem(repository = TodoListRepository())
+            ))
     }
 }

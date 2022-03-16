@@ -1,10 +1,7 @@
 package com.santimattius.list.di
 
 import com.santimattius.list.data.TodoListRepository
-import com.santimattius.list.domain.AddTodoItem
-import com.santimattius.list.domain.FindTodoItem
-import com.santimattius.list.domain.GetTodoItems
-import com.santimattius.list.domain.UpdateTodoItem
+import com.santimattius.list.domain.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,4 +27,8 @@ class UiModule {
     @Provides
     @ViewModelScoped
     fun provideUpdateTodoItem(repository: TodoListRepository) = UpdateTodoItem(repository)
+
+    @Provides
+    @ViewModelScoped
+    fun provideRemoveTodoItem(repository: TodoListRepository) = RemoveTodoItem(repository)
 }
