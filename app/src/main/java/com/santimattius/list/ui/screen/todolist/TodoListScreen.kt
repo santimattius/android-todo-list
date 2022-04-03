@@ -12,13 +12,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -36,7 +38,6 @@ import com.santimattius.list.domain.GetTodoItems
 import com.santimattius.list.domain.RemoveTodoItem
 import com.santimattius.list.domain.TodoItem
 import com.santimattius.list.ui.components.*
-import kotlinx.coroutines.delay
 
 @ExperimentalMaterialApi
 @Composable
@@ -90,20 +91,13 @@ fun TodoListContent(
                 onRefresh = {
                     todoViewModel.refresh()
                 }) {
-//                var columnAppeared by remember { mutableStateOf(false) }
-//                LaunchedEffect(Unit) {
-//                    columnAppeared = true
-//                }
+
+                val todos = data.toMutableStateList()
+
                 LazyColumn(modifier = modifier) {
-                    itemsIndexed(
-                        items = data,
-                        key = { _, item ->
-                            item.hashCode()
-                        }
-                    ) { _, item ->
+                    items(todos, { item -> item.id }) { item ->
                         TodoListContentItem(
                             item = item,
-                            columnAppeared = true,
                             onTodoItemClick = onTodoItemClick,
                             onTodoItemDelete = onTodoItemDelete
                         )
@@ -119,24 +113,14 @@ fun TodoListContent(
 @Composable
 private fun TodoListContentItem(
     item: TodoItem,
-    columnAppeared: Boolean,
     onTodoItemClick: (TodoItem) -> Unit,
     onTodoItemDelete: (TodoItem) -> Unit,
 ) {
     val dismissState = rememberDismissState()
-    val dismissDirection = dismissState.dismissDirection
     val isDismissed = dismissState.isDismissed(DismissDirection.EndToStart)
-    if (isDismissed && dismissDirection == DismissDirection.EndToStart) {
-//        LaunchedEffect(Unit) {
-//            delay(300)
-//
-//        }
+    if (isDismissed) {
         onTodoItemDelete(item)
     }
-    //var itemAppeared by remember { mutableStateOf(!columnAppeared) }
-//    LaunchedEffect(Unit) {
-//        itemAppeared = true
-//    }
     AnimatedVisibility(
         visible = !isDismissed,
         exit = shrinkVertically(
@@ -153,7 +137,7 @@ private fun TodoListContentItem(
         SwipeToDismiss(
             state = dismissState,
             modifier = Modifier.padding(vertical = 4.dp),
-            directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
+            directions = setOf( DismissDirection.EndToStart),
             dismissThresholds = { direction ->
                 FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.25f else 0.5f)
             },

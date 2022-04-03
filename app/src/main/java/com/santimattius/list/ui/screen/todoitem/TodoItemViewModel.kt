@@ -73,7 +73,7 @@ class TodoItemViewModel @Inject constructor(
         } else {
             job?.cancel()
             job = viewModelScope.launch(coroutineExceptionHandler) {
-                when (state.actionType) {
+                val isSuccess = when (state.actionType) {
                     ActionType.EDIT -> {
                         updateTodoItem(todoItem)
                     }
@@ -81,6 +81,7 @@ class TodoItemViewModel @Inject constructor(
                         addTodoItem(todoItem)
                     }
                 }
+                state = state.copy(close = isSuccess)
             }
         }
     }

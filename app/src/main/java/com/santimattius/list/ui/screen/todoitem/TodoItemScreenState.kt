@@ -7,8 +7,9 @@ data class TodoItemScreenState(
     val withError: Boolean = false,
     val actionType: ActionType = ActionType.CREATE,
     val todoItem: TodoItem = TodoItem.empty(),
+    val close: Boolean = false,
 ) {
     companion object {
-        fun initial() = TodoItemScreenState(isLoading = true)
+        fun initial() = TodoItemScreenState(isLoading = true, )
     }
 }
