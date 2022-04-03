@@ -32,7 +32,7 @@ fun TodoItemDetailScreen(
 ) {
 
     if (todoItemViewModel.state.close) {
-        Confirmation(onBackAction)
+        Confirmation(action = onBackAction)
     } else {
         Scaffold(
             topBar = {
@@ -58,10 +58,10 @@ fun TodoItemDetailScreen(
 }
 
 @Composable
-private fun Confirmation(onBackAction: () -> Unit) {
+private fun Confirmation(delay: Long = 800L, action: () -> Unit) {
     LaunchedEffect(key1 = true) {
-        delay(800L)
-        onBackAction()
+        delay(delay)
+        action()
     }
 
     Box(
@@ -107,8 +107,6 @@ private fun TodoItemContent(
                 hostState = snackBarHostState)
         }
     }
-
-
 }
 
 @Composable
