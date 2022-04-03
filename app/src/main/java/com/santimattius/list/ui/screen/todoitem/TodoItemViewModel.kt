@@ -69,7 +69,7 @@ class TodoItemViewModel @Inject constructor(
     fun save() {
         val todoItem = state.todoItem
         if (todoItem.isEmpty()) {
-            //TODO: show empty message
+            state = TodoItemScreenState(isEmpty = true)
         } else {
             job?.cancel()
             job = viewModelScope.launch(coroutineExceptionHandler) {

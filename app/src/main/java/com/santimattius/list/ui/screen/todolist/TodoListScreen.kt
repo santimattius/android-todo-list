@@ -64,7 +64,9 @@ fun TodoListScreen(
     ) { paddingValues ->
         TodoListContent(
             todoViewModel = todoViewModel,
-            modifier = Modifier.padding(paddingValues),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
             onTodoItemClick = onTodoItemClick,
             onTodoItemDelete = todoViewModel::removeItem
         )
@@ -137,7 +139,7 @@ private fun TodoListContentItem(
         SwipeToDismiss(
             state = dismissState,
             modifier = Modifier.padding(vertical = 4.dp),
-            directions = setOf( DismissDirection.EndToStart),
+            directions = setOf(DismissDirection.EndToStart),
             dismissThresholds = { direction ->
                 FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.25f else 0.5f)
             },

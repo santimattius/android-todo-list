@@ -3,6 +3,7 @@ package com.santimattius.list.ui.screen.todoitem
 import com.santimattius.list.domain.TodoItem
 
 data class TodoItemScreenState(
+    val isEmpty: Boolean = false,
     val isLoading: Boolean = false,
     val withError: Boolean = false,
     val actionType: ActionType = ActionType.CREATE,
@@ -10,6 +11,6 @@ data class TodoItemScreenState(
     val close: Boolean = false,
 ) {
     companion object {
-        fun initial() = TodoItemScreenState(isLoading = true, )
+        fun initial() = TodoItemScreenState(isLoading = true)
     }
 }

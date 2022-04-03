@@ -3,14 +3,16 @@ package com.santimattius.list.ui.screen.todoitem
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,12 +23,14 @@ import com.santimattius.list.TodoListApp
 import com.santimattius.list.domain.TodoItem
 import com.santimattius.list.ui.components.*
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun TodoItemDetailScreen(
     todoItemViewModel: TodoItemViewModel = hiltViewModel(),
     onBackAction: () -> Unit = {},
 ) {
+
     if (todoItemViewModel.state.close) {
         Confirmation(onBackAction)
     } else {
@@ -43,17 +47,11 @@ fun TodoItemDetailScreen(
                 )
             }
         ) { innerPadding ->
-            Surface(
-                color = Color.White,
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize(),
-            ) {
-                TodoItemContent(
-                    state = todoItemViewModel.state,
-                    onTodoItemChange = todoItemViewModel::update
-                )
-            }
+            TodoItemContent(
+                state = todoItemViewModel.state,
+                modifier = Modifier.padding(innerPadding),
+                onTodoItemChange = todoItemViewModel::update
+            )
         }
     }
 
@@ -83,24 +81,40 @@ private fun TodoItemContent(
     modifier: Modifier = Modifier,
     onTodoItemChange: (TodoItem) -> Unit = {},
 ) {
-    with(state) {
-        when {
-            isLoading -> LoadingIndicator()
-            withError -> ErrorView(message = "Todo Item error")
-            else -> TodoForm(
-                todoItem = todoItem,
-                modifier = modifier,
-                onTodoItemChange = onTodoItemChange
-            )
+    val scope = rememberCoroutineScope()
+    val snackBarHostState = remember { SnackbarHostState() }
+
+    Box(modifier = modifier.fillMaxSize()) {
+        with(state) {
+            when {
+                isLoading -> LoadingIndicator()
+                withError -> ErrorView(message = "Todo Item error")
+                else -> {
+                    if (isEmpty) {
+                        scope.launch {
+                            snackBarHostState.showSnackbar("Hello there")
+                        }
+                    }
+                    TodoForm(
+                        todoItem = todoItem,
+                        onTodoItemChange = onTodoItemChange
+                    )
+                }
+            }
+        }
+        Box(modifier = Modifier.align(Alignment.BottomCenter)) {
+            SnackbarHost(
+                hostState = snackBarHostState)
         }
     }
+
 
 }
 
 @Composable
 private fun TodoForm(
     todoItem: TodoItem,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     onTodoItemChange: (TodoItem) -> Unit = {},
 ) {
     Column(
