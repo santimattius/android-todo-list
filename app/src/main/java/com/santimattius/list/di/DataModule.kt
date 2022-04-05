@@ -1,5 +1,6 @@
 package com.santimattius.list.di
 
+import com.santimattius.list.data.LocalDataSource
 import com.santimattius.list.data.TodoListRepository
 import dagger.Module
 import dagger.Provides
@@ -13,5 +14,6 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun provideRepository(): TodoListRepository = TodoListRepository()
+    fun provideRepository(localDataSource: LocalDataSource): TodoListRepository =
+        TodoListRepository(localDataSource)
 }

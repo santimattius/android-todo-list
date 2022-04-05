@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun TodoAppBar(
-    title: String,
+    title: String = "",
     backAction: AppBarItem? = null,
     actions: List<AppBarItem> = emptyList(),
 ) {

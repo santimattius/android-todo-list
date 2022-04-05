@@ -37,7 +37,6 @@ fun TodoItemDetailScreen(
         Scaffold(
             topBar = {
                 TodoAppBar(
-                    title = "",
                     backAction = AppBarItem.back(onBackAction),
                     actions = listOf(
                         AppBarItem(icon = Icons.Default.Save) {
@@ -103,8 +102,7 @@ private fun TodoItemContent(
             }
         }
         Box(modifier = Modifier.align(Alignment.BottomCenter)) {
-            SnackbarHost(
-                hostState = snackBarHostState)
+            SnackbarHost(hostState = snackBarHostState)
         }
     }
 }

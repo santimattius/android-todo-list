@@ -9,7 +9,8 @@ import com.santimattius.list.domain.GetTodoItems
 import com.santimattius.list.domain.RemoveTodoItem
 import com.santimattius.list.domain.TodoItem
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,8 +19,6 @@ class TodoViewModel @Inject constructor(
     private val getTodoItems: GetTodoItems,
     private val removeTodoItem: RemoveTodoItem,
 ) : ViewModel() {
-
-    private var job: Job? = null
 
     var state by mutableStateOf(TodoListState())
         private set
@@ -30,30 +29,24 @@ class TodoViewModel @Inject constructor(
 
     private fun loadTodoList() {
         state = state.copy(isLoading = true)
-        job?.cancel()
-        job = viewModelScope.launch {
-            val items = getTodoItems()
-            state = state.copy(isLoading = false, data = items)
-        }
-    }
-
-    fun removeItem(item: TodoItem) {
-        job?.cancel()
-        job = viewModelScope.launch {
-            if (removeTodoItem(item)) {
-                val items = getTodoItems()
+        viewModelScope.launch {
+            getTodoItems().collect { items ->
                 state = state.copy(isLoading = false, data = items)
             }
         }
     }
 
-    fun refresh() {
-        state = state.copy(isRefreshing = true)
-        job?.cancel()
-        job = viewModelScope.launch {
-            val items = getTodoItems()
-            state = state.copy(isRefreshing = false, data = items)
+    fun removeItem(item: TodoItem) {
+        viewModelScope.launch {
+            removeTodoItem(item)
         }
     }
 
+    fun refresh() {
+        state = state.copy(isRefreshing = true)
+        viewModelScope.launch {
+            delay(1_000)
+            state = state.copy(isRefreshing = false)
+        }
+    }
 }
