@@ -28,7 +28,7 @@ class TodoItemViewModel @Inject constructor(
         private set
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, _ ->
-        //TODO: launch error
+        showError()
     }
 
     init {
@@ -38,8 +38,8 @@ class TodoItemViewModel @Inject constructor(
     }
 
     private fun load(id: String) {
-        job?.cancel()
         state = state.copy(isLoading = true)
+        job?.cancel()
         job = viewModelScope.launch(coroutineExceptionHandler) {
             val item = findTodoItem(id)
             state = if (item == null) {
