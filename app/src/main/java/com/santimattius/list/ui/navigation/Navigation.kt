@@ -1,8 +1,8 @@
 package com.santimattius.list.ui.navigation
 
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.*
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.material.ExperimentalMaterialApi
@@ -63,6 +63,24 @@ private fun NavGraphBuilder.navDefinitions(
                 navController.navigate(Route.TodoItem.createRoute(it.id.toString()))
             }
         },
+        exitTransition = {
+            slideOutHorizontally(
+                targetOffsetX = { -width },
+                animationSpec = tween(
+                    durationMillis = 300,
+                    easing = FastOutSlowInEasing
+                )
+            ) + fadeOut(animationSpec = tween(300))
+        },
+        popEnterTransition = {
+            slideInHorizontally(
+                initialOffsetX = { -width },
+                animationSpec = tween(
+                    durationMillis = 300,
+                    easing = FastOutSlowInEasing
+                )
+            ) + fadeIn(animationSpec = tween(300))
+        },
     )
     composable(
         route = Route.TodoItem.route,
@@ -71,6 +89,24 @@ private fun NavGraphBuilder.navDefinitions(
                 navController.popBackStack()
             }
         },
+        enterTransition = {
+            slideInHorizontally(
+                initialOffsetX = { width },
+                animationSpec = tween(
+                    durationMillis = 300,
+                    easing = FastOutSlowInEasing
+                )
+            ) + fadeIn(animationSpec = tween(300))
+        },
+        popExitTransition = {
+            slideOutHorizontally(
+                targetOffsetX = { width },
+                animationSpec = tween(
+                    durationMillis = 300,
+                    easing = FastOutSlowInEasing
+                )
+            ) + fadeOut(animationSpec = tween(300))
+        }
     )
 }
 

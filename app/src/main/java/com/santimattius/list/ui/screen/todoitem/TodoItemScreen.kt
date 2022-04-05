@@ -31,28 +31,30 @@ fun TodoItemDetailScreen(
     onBackAction: () -> Unit = {},
 ) {
 
-    if (todoItemViewModel.state.close) {
-        Confirmation(action = onBackAction)
-    } else {
-        Scaffold(
-            topBar = {
-                TodoAppBar(
-                    backAction = AppBarItem.back(onBackAction),
-                    actions = listOf(
-                        AppBarItem(icon = Icons.Default.Save) {
-                            todoItemViewModel.save()
-                        }
-                    )
+    Scaffold(
+        topBar = {
+            TodoAppBar(
+                backAction = AppBarItem.back(onBackAction),
+                actions = listOf(
+                    AppBarItem(icon = Icons.Default.Save) {
+                        todoItemViewModel.save()
+                    }
                 )
-            }
-        ) { innerPadding ->
+            )
+        }
+    ) { innerPadding ->
+        if (todoItemViewModel.state.close) {
+            Confirmation(action = onBackAction)
+        } else {
             TodoItemContent(
                 state = todoItemViewModel.state,
                 modifier = Modifier.padding(innerPadding),
                 onTodoItemChange = todoItemViewModel::update
             )
+
         }
     }
+
 
 }
 
