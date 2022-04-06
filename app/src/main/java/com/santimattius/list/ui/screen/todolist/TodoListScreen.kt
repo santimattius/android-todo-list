@@ -25,10 +25,12 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color.Companion.Green
 import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.graphics.Color.Companion.Red
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.santimattius.list.R
 import com.santimattius.list.domain.TodoItem
 import com.santimattius.list.ui.components.*
 
@@ -40,7 +42,7 @@ fun TodoListScreen(
 ) {
     Scaffold(
         topBar = {
-            TodoAppBar(title = "Todo")
+            TodoAppBar(title = stringResource(id = R.string.app_name))
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -50,7 +52,7 @@ fun TodoListScreen(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Add,
-                    contentDescription = "Add todo list"
+                    contentDescription = stringResource(R.string.text_desc_add_todo)
                 )
             }
         }
@@ -78,7 +80,7 @@ fun TodoListContent(
         when {
             isLoading -> LoadingIndicator(modifier = modifier)
             hasError -> ErrorView(
-                message = "Message of Error",
+                message = stringResource(R.string.text_msg_error_list),
                 modifier = modifier
             )
             isEmpty -> EmptyView(modifier = modifier)
@@ -207,7 +209,7 @@ fun SwipeToDismissComponent(
             ) {
                 Icon(
                     icon,
-                    contentDescription = "Localized description",
+                    contentDescription = stringResource(R.string.text_desc_delete_action),
                     modifier = Modifier.scale(scale)
                 )
             }

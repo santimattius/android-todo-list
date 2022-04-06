@@ -7,6 +7,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -17,6 +18,7 @@ import com.santimattius.list.ui.screen.SplashScreen
 import com.santimattius.list.ui.screen.todoitem.TodoItemDetailScreen
 import com.santimattius.list.ui.screen.todolist.TodoListScreen
 
+@ExperimentalComposeUiApi
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @ExperimentalFoundationApi
@@ -24,20 +26,19 @@ import com.santimattius.list.ui.screen.todolist.TodoListScreen
 fun Navigation() {
     BoxWithConstraints {
         val navController = rememberAnimatedNavController()
-
         AnimatedNavHost(
             navController = navController,
             startDestination = Route.Splash.route,
         ) {
             navDefinitions(
                 navController = navController,
-                width = constraints.maxWidth / 2
+                width = constraints.maxWidth.div(2)
             )
         }
     }
 }
 
-//TODO: add animations
+@ExperimentalComposeUiApi
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @ExperimentalFoundationApi

@@ -16,7 +16,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.santimattius.list.TodoListApp
 import com.santimattius.list.domain.TodoItem
-import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
@@ -46,9 +45,8 @@ fun TodoItemCard(
                 text = item.description,
                 style = MaterialTheme.typography.subtitle2
             )
-            //TODO: move format
             Text(
-                text = SimpleDateFormat("dd-MM-yyyy").format(item.date),
+                text = item.date.asString(),
                 style = MaterialTheme.typography.body2
             )
         }

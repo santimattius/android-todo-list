@@ -51,7 +51,7 @@ fun TodoAppBar(
 
 data class AppBarItem(
     val icon: ImageVector,
-    val contentDescription: String = "Without description",
+    val contentDescription: String,
     val action: () -> Unit = {},
 ) {
     companion object {

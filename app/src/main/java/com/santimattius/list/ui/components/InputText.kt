@@ -13,7 +13,8 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 
-@OptIn(ExperimentalComposeUiApi::class)
+
+@ExperimentalComposeUiApi
 @Composable
 fun TodoInputText(
     text: String,
@@ -38,6 +39,7 @@ fun TodoInputText(
     )
 }
 
+@ExperimentalComposeUiApi
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun TodoInputPreview() {

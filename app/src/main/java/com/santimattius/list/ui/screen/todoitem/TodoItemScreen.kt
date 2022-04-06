@@ -12,6 +12,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -25,6 +26,7 @@ import com.santimattius.list.ui.components.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@ExperimentalComposeUiApi
 @Composable
 fun TodoItemDetailScreen(
     todoItemViewModel: TodoItemViewModel = hiltViewModel(),
@@ -36,7 +38,10 @@ fun TodoItemDetailScreen(
             TodoAppBar(
                 backAction = AppBarItem.back(onBackAction),
                 actions = listOf(
-                    AppBarItem(icon = Icons.Default.Save) {
+                    AppBarItem(
+                        icon = Icons.Default.Save,
+                        contentDescription = stringResource(R.string.text_desc_save_action)
+                    ) {
                         todoItemViewModel.save()
                     }
                 )
@@ -71,11 +76,12 @@ private fun Confirmation(delay: Long = 800L, action: () -> Unit) {
     ) {
         Image(
             painter = painterResource(id = R.drawable.ic_splash),
-            contentDescription = "Logo",
+            contentDescription = stringResource(R.string.text_desc_confimation),
         )
     }
 }
 
+@ExperimentalComposeUiApi
 @Composable
 private fun TodoItemContent(
     state: TodoItemScreenState,
@@ -89,11 +95,12 @@ private fun TodoItemContent(
         with(state) {
             when {
                 isLoading -> LoadingIndicator()
-                withError -> ErrorView(message = "Todo Item error")
+                withError -> ErrorView(message = stringResource(R.string.text_msg_error_todo_detail))
                 else -> {
                     if (isEmpty) {
+                        val message = stringResource(R.string.text_msg_attr_required)
                         scope.launch {
-                            snackBarHostState.showSnackbar("Hello there")
+                            snackBarHostState.showSnackbar(message)
                         }
                     }
                     TodoForm(
@@ -109,6 +116,7 @@ private fun TodoItemContent(
     }
 }
 
+@ExperimentalComposeUiApi
 @Composable
 private fun TodoForm(
     todoItem: TodoItem,
@@ -145,6 +153,7 @@ private fun TodoForm(
 }
 
 
+@ExperimentalComposeUiApi
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun TodoItemDescriptionPreview() {
