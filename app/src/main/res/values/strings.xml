@@ -2,12 +2,12 @@
     <string name="app_name">Todo List</string>
     <string name="text_input_label_title">Title</string>
     <string name="text_input_label_description">Description</string>
-    <string name="text_empty">Create new todo item</string>
+    <string name="text_empty">You haven\'t added any note yet</string>
     <string name="text_desc_empty_image">Logo</string>
     <string name="text_msg_error_todo_detail">Todo Item error</string>
-    <string name="text_msg_attr_required">Hello there</string>
+    <string name="text_msg_attr_required">The title and description are required.</string>
     <string name="text_desc_save_action">Save todo</string>
-    <string name="text_desc_confimation">Logo</string>
+    <string name="text_desc_confirmation">Logo</string>
     <string name="text_msg_error_list">Message of Error</string>
     <string name="text_desc_delete_action">Localized description</string>
     <string name="text_desc_add_todo">Add todo list</string>

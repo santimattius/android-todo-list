@@ -1,24 +1,23 @@
 package com.santimattius.list.ui.screen.todoitem
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Save
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.santimattius.list.R
 import com.santimattius.list.TodoListApp
 import com.santimattius.list.domain.TodoItem
@@ -33,51 +32,51 @@ fun TodoItemDetailScreen(
     onBackAction: () -> Unit = {},
 ) {
 
-    Scaffold(
-        topBar = {
-            TodoAppBar(
-                backAction = AppBarItem.back(onBackAction),
-                actions = listOf(
-                    AppBarItem(
-                        icon = Icons.Default.Save,
-                        contentDescription = stringResource(R.string.text_desc_save_action)
-                    ) {
-                        todoItemViewModel.save()
-                    }
+    if (todoItemViewModel.state.close) {
+        Confirmation(action = onBackAction)
+    } else {
+        Scaffold(
+            topBar = {
+                TodoAppBar(
+                    backAction = AppBarItem.back(onBackAction),
+                    actions = listOf(
+                        AppBarItem(
+                            icon = Icons.Default.Save,
+                            contentDescription = stringResource(R.string.text_desc_save_action)
+                        ) {
+                            todoItemViewModel.save()
+                        }
+                    )
                 )
-            )
-        }
-    ) { innerPadding ->
-        if (todoItemViewModel.state.close) {
-            Confirmation(action = onBackAction)
-        } else {
+            }
+        ) { innerPadding ->
             TodoItemContent(
                 state = todoItemViewModel.state,
                 modifier = Modifier.padding(innerPadding),
                 onTodoItemChange = todoItemViewModel::update
             )
-
         }
     }
-
-
 }
 
 @Composable
-private fun Confirmation(delay: Long = 800L, action: () -> Unit) {
-    LaunchedEffect(key1 = true) {
-        delay(delay)
-        action()
-    }
-
+private fun Confirmation(delay: Long = 200L, action: () -> Unit) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier.fillMaxSize()
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_splash),
-            contentDescription = stringResource(R.string.text_desc_confimation),
+        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.confirmation))
+        val progress by animateLottieCompositionAsState(composition)
+        LottieAnimation(
+            composition,
+            progress,
         )
+        if (progress == 1.0f) {
+            LaunchedEffect(key1 = true) {
+                delay(delay)
+                action()
+            }
+        }
     }
 }
 
@@ -151,7 +150,6 @@ private fun TodoForm(
         )
     }
 }
-
 
 @ExperimentalComposeUiApi
 @Preview(showBackground = true, showSystemUi = true)

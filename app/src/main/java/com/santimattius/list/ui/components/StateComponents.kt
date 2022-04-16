@@ -22,8 +22,8 @@ fun EmptyView(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            modifier = Modifier.padding(start = 16.dp),
-            painter = painterResource(id = R.drawable.ic_empty),
+            modifier = Modifier.padding(end = 8.dp),
+            painter = painterResource(id = R.drawable.ic_pencil),
             contentDescription = stringResource(R.string.text_desc_empty_image),
         )
         Text(

@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import com.santimattius.list.R
 import kotlinx.coroutines.delay
 
@@ -28,7 +29,8 @@ fun SplashScreen(navigate: () -> Unit) {
             animationSpec = tween(
                 durationMillis = 1000,
                 easing = {
-                    OvershootInterpolator(4f).getInterpolation(it)
+                    OvershootInterpolator(4f)
+                        .getInterpolation(it)
                 })
         )
         delay(800L)
@@ -41,7 +43,7 @@ fun SplashScreen(navigate: () -> Unit) {
     ) {
         Image(
             painter = painterResource(id = R.drawable.ic_splash),
-            contentDescription = "Logo",
+            contentDescription = stringResource(id = R.string.text_desc_confirmation),
             modifier = Modifier.scale(scale.value)
         )
     }

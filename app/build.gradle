@@ -89,6 +89,9 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
     testImplementation "androidx.room:room-testing:$room_version"
 
+    //Lottie
+    implementation "com.airbnb.android:lottie-compose:$lottie_version"
+
     //Unit testing
     testImplementation 'junit:junit:4.+'
     //Android Testing

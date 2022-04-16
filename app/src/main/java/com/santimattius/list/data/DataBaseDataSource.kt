@@ -76,7 +76,7 @@ private fun TodoItem.asEntity(): TodoItemEntity {
         title = this.title,
         description = this.description,
         date = this.date,
-        completed = false //TODO: ui map
+        completed = false
     )
 }
 
