@@ -1,9 +1,10 @@
 # Android Todo List App
 
-This is a template to build an Android app applying good practices and using a clean architecture, you will see that the code is super decoupled with external frameworks and even with the same Android framework, this will help you to model your domain purely in Kotlin without generating external dependencies.
+Todo List App using Jetpack compose and Android Architecture Guide.
 
 <p align="center">
-  <img src="https://github.com/santimattius/android-architecture-guide/blob/master/screenshoot/android-clean-arch-capture.png?raw=true" alt="App Capture"/>
+  <img width="400" src="https://github.com/santimattius/android-todo-list/blob/master/screenshot/todo_list_light.png?raw=true" alt="App Capture"/>
+  <img width="400" src="https://github.com/santimattius/android-todo-list/blob/master/screenshot/todo_list_dark.png?raw=true" alt="App Capture"/>
 </p>
 
 ## Android Architecture Guide
@@ -23,13 +24,14 @@ Below you will find the libraries used to build the template and according to my
 - **Jetpack Compose**:
   - https://developer.android.com/jetpack/compose
 - **Hilt** - dependencie injection: 
-  - https://insert-koin.io/
+  - https://developer.android.com/training/dependency-injection/hilt-android?hl=es-419
 - **Room** - local database: 
-  - https://square.github.io/retrofit/
+  - https://developer.android.com/training/data-storage/room
 - **Lottie** - animation
+  - https://github.com/airbnb/lottie/blob/master/android-compose.md 
 
 ## References
 
- - [Jetpack compose]()
- - [Lottie]()
+ - [Jetpack compose](https://developer.android.com/jetpack/compose)
+ - [Lottie](https://github.com/airbnb/lottie/blob/master/android-compose.md)
  - [Android developers](https://developer.android.com/)
