@@ -36,9 +36,25 @@ import com.santimattius.list.ui.components.*
 
 @ExperimentalMaterialApi
 @Composable
-fun TodoListScreen(
+fun TodoListRoute(
     todoViewModel: TodoViewModel = hiltViewModel(),
     onTodoItemClick: (TodoItem) -> Unit = {},
+) {
+    TodoListScreen(
+        state = todoViewModel.state,
+        onTodoItemClick = onTodoItemClick,
+        onTodoItemDelete = todoViewModel::removeItem,
+        onRefresh = todoViewModel::refresh
+    )
+}
+
+@ExperimentalMaterialApi
+@Composable
+private fun TodoListScreen(
+    state: TodoListState,
+    onRefresh: () -> Unit,
+    onTodoItemClick: (TodoItem) -> Unit = {},
+    onTodoItemDelete: (TodoItem) -> Unit = {},
 ) {
     Scaffold(
         topBar = {
@@ -58,25 +74,27 @@ fun TodoListScreen(
         }
     ) { paddingValues ->
         TodoListContent(
-            todoViewModel = todoViewModel,
+            state = state,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
             onTodoItemClick = onTodoItemClick,
-            onTodoItemDelete = todoViewModel::removeItem
+            onTodoItemDelete = onTodoItemDelete,
+            onRefresh = onRefresh
         )
     }
 }
 
 @ExperimentalMaterialApi
 @Composable
-fun TodoListContent(
-    todoViewModel: TodoViewModel,
+private fun TodoListContent(
+    state: TodoListState,
     modifier: Modifier = Modifier,
+    onRefresh: () -> Unit,
     onTodoItemClick: (TodoItem) -> Unit = {},
     onTodoItemDelete: (TodoItem) -> Unit = {},
 ) {
-    with(todoViewModel.state) {
+    with(state) {
         when {
             isLoading -> LoadingIndicator(modifier = modifier)
             hasError -> ErrorView(
@@ -84,7 +102,13 @@ fun TodoListContent(
                 modifier = modifier
             )
             isEmpty -> EmptyView(modifier = modifier)
-            else -> ListItems(todoViewModel, modifier, onTodoItemClick, onTodoItemDelete)
+            else -> ListItems(
+                state = state,
+                modifier = modifier,
+                onRefresh = onRefresh,
+                onTodoItemClick = onTodoItemClick,
+                onTodoItemDelete = onTodoItemDelete
+            )
         }
     }
 }
@@ -92,16 +116,16 @@ fun TodoListContent(
 @ExperimentalMaterialApi
 @Composable
 private fun ListItems(
-    todoViewModel: TodoViewModel,
+    state: TodoListState,
     modifier: Modifier,
+    onRefresh: () -> Unit,
     onTodoItemClick: (TodoItem) -> Unit,
     onTodoItemDelete: (TodoItem) -> Unit,
 ) {
-    val state = todoViewModel.state
-    SwipeRefresh(state = rememberSwipeRefreshState(state.isRefreshing),
-        onRefresh = {
-            todoViewModel.refresh()
-        }) {
+    SwipeRefresh(
+        state = rememberSwipeRefreshState(state.isRefreshing),
+        onRefresh = onRefresh
+    ) {
         val todos = state.data.toMutableStateList()
         if (todos.isEmpty()) {
             EmptyView(modifier = modifier)
@@ -146,7 +170,7 @@ private fun TodoListContentItem(
 }
 
 @Composable
-fun CustomAnimatedVisibility(
+private fun CustomAnimatedVisibility(
     visible: Boolean,
     content: @Composable AnimatedVisibilityScope.() -> Unit,
 ) {
@@ -168,7 +192,7 @@ fun CustomAnimatedVisibility(
 
 @ExperimentalMaterialApi
 @Composable
-fun SwipeToDismissComponent(
+private fun SwipeToDismissComponent(
     dismissState: DismissState,
     dismissContent: @Composable RowScope.() -> Unit,
 ) {

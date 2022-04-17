@@ -14,9 +14,9 @@ import androidx.navigation.NavGraphBuilder
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.santimattius.list.ui.screen.SplashScreen
-import com.santimattius.list.ui.screen.todoitem.TodoItemDetailScreen
-import com.santimattius.list.ui.screen.todolist.TodoListScreen
+import com.santimattius.list.ui.screen.SplashRoute
+import com.santimattius.list.ui.screen.todoitem.TodoItemDetailRoute
+import com.santimattius.list.ui.screen.todolist.TodoListRoute
 
 @ExperimentalComposeUiApi
 @ExperimentalAnimationApi
@@ -32,7 +32,7 @@ fun Navigation() {
         ) {
             navDefinitions(
                 navController = navController,
-                width = constraints.maxWidth.div(2)
+                width = constraints.maxHeight.div(2)
             )
         }
     }
@@ -49,7 +49,7 @@ private fun NavGraphBuilder.navDefinitions(
     composable(
         route = Route.Splash,
         content = {
-            SplashScreen(navigate = {
+            SplashRoute(navigate = {
                 with(navController) {
                     popBackStack()
                     navigate(Route.TodoList.route)
@@ -60,39 +60,27 @@ private fun NavGraphBuilder.navDefinitions(
     composable(
         route = Route.TodoList.route,
         content = {
-            TodoListScreen {
+            TodoListRoute {
                 navController.navigate(Route.TodoItem.createRoute(it.id.toString()))
             }
         },
         exitTransition = {
-            slideOutHorizontally(
-                targetOffsetX = { -width },
-                animationSpec = tween(
-                    durationMillis = 300,
-                    easing = FastOutSlowInEasing
-                )
-            ) + fadeOut(animationSpec = tween(300))
+            fadeOut(animationSpec = tween(300))
         },
         popEnterTransition = {
-            slideInHorizontally(
-                initialOffsetX = { -width },
-                animationSpec = tween(
-                    durationMillis = 300,
-                    easing = FastOutSlowInEasing
-                )
-            ) + fadeIn(animationSpec = tween(300))
+            fadeIn(animationSpec = tween(300))
         },
     )
     composable(
         route = Route.TodoItem.route,
         content = {
-            TodoItemDetailScreen {
+            TodoItemDetailRoute {
                 navController.popBackStack()
             }
         },
         enterTransition = {
-            slideInHorizontally(
-                initialOffsetX = { width },
+            slideInVertically(
+                initialOffsetY = { width },
                 animationSpec = tween(
                     durationMillis = 300,
                     easing = FastOutSlowInEasing
@@ -100,13 +88,7 @@ private fun NavGraphBuilder.navDefinitions(
             ) + fadeIn(animationSpec = tween(300))
         },
         popExitTransition = {
-            slideOutHorizontally(
-                targetOffsetX = { width },
-                animationSpec = tween(
-                    durationMillis = 300,
-                    easing = FastOutSlowInEasing
-                )
-            ) + fadeOut(animationSpec = tween(300))
+            fadeOut(animationSpec = tween(300))
         }
     )
 }

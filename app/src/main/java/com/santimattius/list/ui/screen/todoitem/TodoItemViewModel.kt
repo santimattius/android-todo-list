@@ -62,6 +62,10 @@ class TodoItemViewModel @Inject constructor(
         state = state.copy(todoItem = todoItem)
     }
 
+    fun errorDismiss() {
+        state = state.copy(withError = false)
+    }
+
     private fun showError() {
         state = state.copy(isLoading = false, withError = true)
     }

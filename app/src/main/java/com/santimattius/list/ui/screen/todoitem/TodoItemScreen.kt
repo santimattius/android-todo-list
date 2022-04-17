@@ -1,12 +1,15 @@
 package com.santimattius.list.ui.screen.todoitem
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.ConfirmationNumber
 import androidx.compose.material.icons.filled.Save
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -27,35 +30,59 @@ import kotlinx.coroutines.launch
 
 @ExperimentalComposeUiApi
 @Composable
-fun TodoItemDetailScreen(
+fun TodoItemDetailRoute(
     todoItemViewModel: TodoItemViewModel = hiltViewModel(),
+    scaffoldState: ScaffoldState = rememberScaffoldState(),
     onBackAction: () -> Unit = {},
 ) {
 
     if (todoItemViewModel.state.close) {
         Confirmation(action = onBackAction)
     } else {
-        Scaffold(
-            topBar = {
-                TodoAppBar(
-                    backAction = AppBarItem.back(onBackAction),
-                    actions = listOf(
-                        AppBarItem(
-                            icon = Icons.Default.Save,
-                            contentDescription = stringResource(R.string.text_desc_save_action)
-                        ) {
-                            todoItemViewModel.save()
-                        }
+        TodoItemScreen(
+            state = todoItemViewModel.state,
+            scaffoldState = scaffoldState,
+            onBackAction = onBackAction,
+            onSaveAction = todoItemViewModel::save,
+            onUpdateAction = todoItemViewModel::update,
+            onErrorDismissState = todoItemViewModel::errorDismiss
+        )
+    }
+}
+
+@ExperimentalComposeUiApi
+@Composable
+private fun TodoItemScreen(
+    state: TodoItemScreenState,
+    scaffoldState: ScaffoldState,
+    onBackAction: () -> Unit = {},
+    onSaveAction: () -> Unit = {},
+    onUpdateAction: (TodoItem) -> Unit = {},
+    onErrorDismissState: () -> Unit = {},
+) {
+    Scaffold(
+        scaffoldState = scaffoldState,
+        snackbarHost = { SnackbarHost(hostState = it) },
+        topBar = {
+            TodoAppBar(
+                backAction = AppBarItem.back(onBackAction),
+                actions = listOf(
+                    AppBarItem(
+                        icon = Icons.Default.Check,
+                        contentDescription = stringResource(R.string.text_desc_save_action),
+                        action = onSaveAction
                     )
                 )
-            }
-        ) { innerPadding ->
-            TodoItemContent(
-                state = todoItemViewModel.state,
-                modifier = Modifier.padding(innerPadding),
-                onTodoItemChange = todoItemViewModel::update
             )
         }
+    ) { innerPadding ->
+        TodoItemContent(
+            state = state,
+            scaffoldState = scaffoldState,
+            modifier = Modifier.padding(innerPadding),
+            onTodoItemChange = onUpdateAction,
+            onErrorDismissState = onErrorDismissState
+        )
     }
 }
 
@@ -84,35 +111,41 @@ private fun Confirmation(delay: Long = 200L, action: () -> Unit) {
 @Composable
 private fun TodoItemContent(
     state: TodoItemScreenState,
+    scaffoldState: ScaffoldState,
     modifier: Modifier = Modifier,
     onTodoItemChange: (TodoItem) -> Unit = {},
+    onErrorDismissState: () -> Unit = {},
 ) {
-    val scope = rememberCoroutineScope()
-    val snackBarHostState = remember { SnackbarHostState() }
-
-    Box(modifier = modifier.fillMaxSize()) {
-        with(state) {
-            when {
-                isLoading -> LoadingIndicator()
-                withError -> ErrorView(message = stringResource(R.string.text_msg_error_todo_detail))
-                else -> {
-                    if (isEmpty) {
-                        val message = stringResource(R.string.text_msg_attr_required)
-                        scope.launch {
-                            snackBarHostState.showSnackbar(message)
+    val coroutineScope = rememberCoroutineScope()
+    with(state) {
+        when {
+            isLoading -> LoadingIndicator(modifier = modifier)
+            withError -> ErrorView(
+                message = stringResource(R.string.text_msg_error_todo_detail),
+                modifier = modifier
+            )
+            else -> {
+                if (state.isEmpty) {
+                    val errorMessageText = stringResource(R.string.text_msg_attr_required)
+                    coroutineScope.launch {
+                        val result = scaffoldState.snackbarHostState.showSnackbar(
+                            message = errorMessageText,
+                        )
+                        if (result == SnackbarResult.Dismissed) {
+                            // Once the message is displayed and dismissed, notify the ViewModel
+                            onErrorDismissState()
                         }
                     }
-                    TodoForm(
-                        todoItem = todoItem,
-                        onTodoItemChange = onTodoItemChange
-                    )
                 }
+                TodoForm(
+                    todoItem = todoItem,
+                    modifier = modifier,
+                    onTodoItemChange = onTodoItemChange
+                )
             }
         }
-        Box(modifier = Modifier.align(Alignment.BottomCenter)) {
-            SnackbarHost(hostState = snackBarHostState)
-        }
     }
+
 }
 
 @ExperimentalComposeUiApi
@@ -159,6 +192,7 @@ fun TodoItemDescriptionPreview() {
         content = {
             TodoItemContent(
                 state = TodoItemScreenState(todoItem = TodoItem.empty()),
+                scaffoldState = rememberScaffoldState(),
                 onTodoItemChange = { }
             )
         }

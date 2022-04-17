@@ -8,6 +8,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -57,7 +58,7 @@ data class AppBarItem(
     companion object {
 
         fun back(action: () -> Unit = {}) = AppBarItem(
-            icon = Icons.Default.ArrowBack,
+            icon = Icons.Default.Close,
             contentDescription = "Back",
             action = action)
     }

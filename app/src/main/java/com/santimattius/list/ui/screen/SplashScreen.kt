@@ -18,7 +18,12 @@ import com.santimattius.list.R
 import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen(navigate: () -> Unit) {
+fun SplashRoute(navigate: () -> Unit) {
+    SplashScreen(navigate = navigate)
+}
+
+@Composable
+private fun SplashScreen(navigate: () -> Unit) {
     val scale = remember {
         Animatable(0f)
     }
