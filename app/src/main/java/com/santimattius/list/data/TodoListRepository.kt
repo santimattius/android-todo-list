@@ -18,7 +18,8 @@ class TodoListRepository(
     }
 
     suspend fun updateTodoItem(todoItem: TodoItem): Boolean {
-        val result = localDataSource.update(todoItem)
+        val todoItemUpdated = todoItem.copy(date = Date())
+        val result = localDataSource.update(todoItemUpdated)
         return result.isSuccess
     }
 

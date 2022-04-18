@@ -11,6 +11,6 @@ class TodoItemEntity(
     @ColumnInfo(name = "id") val id: String,
     @ColumnInfo(name = "title") val title: String,
     @ColumnInfo(name = "description") val description: String,
-    @ColumnInfo(name = "data") val date: Date,
+    @ColumnInfo(name = "date") val date: Date,
     @ColumnInfo(name = "completed") val completed: Boolean,
 )
