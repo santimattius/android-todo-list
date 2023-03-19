@@ -12,6 +12,12 @@ sealed class Route(
     object TodoList : Route(definition = "todo")
     object TodoItem : Route(definition = "todo", arguments = listOf(NavArguments.Id)) {
         fun createRoute(id: String) = "$definition/$id"
+
+    }
+
+    object TodoItemDialog : Route(definition = "todo_dialog", arguments = listOf(NavArguments.Id)) {
+        fun createRoute(id: String) = "$definition/$id"
+
     }
 
     val route = run {

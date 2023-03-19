@@ -11,11 +11,13 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.dialog
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.santimattius.list.ui.screen.SplashRoute
 import com.santimattius.list.ui.screen.todoitem.TodoItemDetailRoute
+import com.santimattius.list.ui.screen.todoitem.TodoItemDialogRoute
 import com.santimattius.list.ui.screen.todolist.TodoListRoute
 
 @ExperimentalComposeUiApi
@@ -61,7 +63,7 @@ private fun NavGraphBuilder.navDefinitions(
         route = Route.TodoList.route,
         content = {
             TodoListRoute {
-                navController.navigate(Route.TodoItem.createRoute(it.id.toString()))
+                navController.navigate(Route.TodoItemDialog.createRoute(it.id.toString()))
             }
         },
         exitTransition = {
@@ -91,6 +93,14 @@ private fun NavGraphBuilder.navDefinitions(
             fadeOut(animationSpec = tween(300))
         }
     )
+    dialog(
+        route = Route.TodoItemDialog.route,
+        arguments = Route.TodoItemDialog.args
+    ) {
+        TodoItemDialogRoute {
+            navController.popBackStack()
+        }
+    }
 }
 
 @ExperimentalAnimationApi
