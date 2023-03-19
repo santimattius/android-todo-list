@@ -11,4 +11,5 @@
     <string name="text_msg_error_list">Message of Error</string>
     <string name="text_desc_delete_action">Localized description</string>
     <string name="text_desc_add_todo">Add todo list</string>
+    <string name="feedback_message">Send your feedback</string>
 </resources>

@@ -7,12 +7,16 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Message
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.google.firebase.appdistribution.ktx.appDistribution
+import com.google.firebase.ktx.Firebase
+import com.santimattius.list.BuildConfig
+import com.santimattius.list.R
 
 
 @Composable
@@ -21,6 +25,11 @@ fun TodoAppBar(
     backAction: AppBarItem? = null,
     actions: List<AppBarItem> = emptyList(),
 ) {
+    val appbarActions = if (BuildConfig.DEBUG) {
+        actions + firebaseAction()
+    } else {
+        actions
+    }
     val navigationIcon: (@Composable () -> Unit) = {
         if (backAction != null) {
             AppBarIcon(
@@ -39,7 +48,7 @@ fun TodoAppBar(
         },
         navigationIcon = backAction?.let { navigationIcon },
         actions = {
-            for (action in actions) {
+            for (action in appbarActions) {
                 AppBarIcon(
                     icon = action.icon,
                     contentDescription = action.contentDescription,
@@ -60,7 +69,8 @@ data class AppBarItem(
         fun back(action: () -> Unit = {}) = AppBarItem(
             icon = Icons.Default.Close,
             contentDescription = "Back",
-            action = action)
+            action = action
+        )
     }
 }
 
@@ -76,5 +86,16 @@ private fun AppBarIcon(
         modifier = Modifier
             .padding(horizontal = 12.dp)
             .clickable(onClick = action)
+    )
+}
+
+
+fun firebaseAction(): AppBarItem {
+    return AppBarItem(
+        icon = Icons.Default.Message,
+        contentDescription = "Feedback",
+        action = {
+            Firebase.appDistribution.startFeedback(R.string.feedback_message)
+        }
     )
 }
