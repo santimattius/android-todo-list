@@ -94,6 +94,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-appdistribution-api-ktx:16.0.0-beta06'
     debugImplementation 'com.google.firebase:firebase-appdistribution:16.0.0-beta06'
 
+    implementation 'com.google.firebase:firebase-config-ktx'
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+
 
     //Unit testing
     testImplementation 'junit:junit:4.+'

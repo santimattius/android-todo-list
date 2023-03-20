@@ -1,14 +1,16 @@
 package com.santimattius.list.ui.navigation
 
-import androidx.compose.animation.*
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.dialog
@@ -49,7 +51,7 @@ private fun NavGraphBuilder.navDefinitions(
     width: Int,
 ) {
     composable(
-        route = Route.Splash,
+        route = Route.Splash.route,
         content = {
             SplashRoute(navigate = {
                 with(navController) {
@@ -62,8 +64,12 @@ private fun NavGraphBuilder.navDefinitions(
     composable(
         route = Route.TodoList.route,
         content = {
-            TodoListRoute {
-                navController.navigate(Route.TodoItemDialog.createRoute(it.id.toString()))
+            TodoListRoute { item, newFlow ->
+                if (newFlow) {
+                    navController.navigate(Route.TodoItemDialog.createRoute(item.id.toString()))
+                } else {
+                    navController.navigate(Route.TodoItem.createRoute(item.id.toString()))
+                }
             }
         },
         exitTransition = {
@@ -75,6 +81,7 @@ private fun NavGraphBuilder.navDefinitions(
     )
     composable(
         route = Route.TodoItem.route,
+        arguments = Route.TodoItem.args,
         content = {
             TodoItemDetailRoute {
                 navController.popBackStack()
@@ -100,26 +107,5 @@ private fun NavGraphBuilder.navDefinitions(
         TodoItemDialogRoute {
             navController.popBackStack()
         }
-    }
-}
-
-@ExperimentalAnimationApi
-private fun NavGraphBuilder.composable(
-    route: Route,
-    content: @Composable (NavBackStackEntry) -> Unit,
-    enterTransition: () -> EnterTransition? = { null },
-    exitTransition: () -> ExitTransition? = { null },
-    popEnterTransition: () -> EnterTransition? = enterTransition,
-    popExitTransition: () -> ExitTransition? = exitTransition,
-) {
-    composable(
-        route = route.route,
-        arguments = route.args,
-        enterTransition = { enterTransition() },
-        exitTransition = { exitTransition() },
-        popEnterTransition = { popEnterTransition() },
-        popExitTransition = { popExitTransition() }
-    ) {
-        content(it)
     }
 }

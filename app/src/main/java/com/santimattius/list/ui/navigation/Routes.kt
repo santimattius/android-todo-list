@@ -10,7 +10,7 @@ sealed class Route(
 
     object Splash : Route(definition = "splash")
     object TodoList : Route(definition = "todo")
-    object TodoItem : Route(definition = "todo", arguments = listOf(NavArguments.Id)) {
+    object TodoItem : Route(definition = "todo_detail", arguments = listOf(NavArguments.Id)) {
         fun createRoute(id: String) = "$definition/$id"
 
     }

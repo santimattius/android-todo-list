@@ -38,13 +38,14 @@ import com.santimattius.list.ui.components.*
 @Composable
 fun TodoListRoute(
     todoViewModel: TodoViewModel = hiltViewModel(),
-    onTodoItemClick: (TodoItem) -> Unit = {},
+    onTodoItemClick: (TodoItem, Boolean) -> Unit = { _, _ -> },
 ) {
+    val currentState = todoViewModel.state
+
     TodoListScreen(
-        state = todoViewModel.state,
-        onTodoItemClick = onTodoItemClick,
-        onTodoItemDelete = todoViewModel::removeItem,
-        onRefresh = todoViewModel::refresh
+        state = currentState, onTodoItemClick = {
+            onTodoItemClick(it, currentState.newFlowEnable)
+        }, onTodoItemDelete = todoViewModel::removeItem, onRefresh = todoViewModel::refresh
     )
 }
 
@@ -56,23 +57,18 @@ private fun TodoListScreen(
     onTodoItemClick: (TodoItem) -> Unit = {},
     onTodoItemDelete: (TodoItem) -> Unit = {},
 ) {
-    Scaffold(
-        topBar = {
-            TodoAppBar(title = stringResource(id = R.string.app_name))
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    onTodoItemClick(TodoItem.empty())
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = stringResource(R.string.text_desc_add_todo)
-                )
-            }
+    Scaffold(topBar = {
+        TodoAppBar(title = stringResource(id = R.string.app_name))
+    }, floatingActionButton = {
+        FloatingActionButton(onClick = {
+            onTodoItemClick(TodoItem.empty())
+        }) {
+            Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = stringResource(R.string.text_desc_add_todo)
+            )
         }
-    ) { paddingValues ->
+    }) { paddingValues ->
         TodoListContent(
             state = state,
             modifier = Modifier
@@ -98,8 +94,7 @@ private fun TodoListContent(
         when {
             isLoading -> LoadingIndicator(modifier = modifier)
             hasError -> ErrorView(
-                message = stringResource(R.string.text_msg_error_list),
-                modifier = modifier
+                message = stringResource(R.string.text_msg_error_list), modifier = modifier
             )
             isEmpty -> EmptyView(modifier = modifier)
             else -> ListItems(
@@ -123,8 +118,7 @@ private fun ListItems(
     onTodoItemDelete: (TodoItem) -> Unit,
 ) {
     SwipeRefresh(
-        state = rememberSwipeRefreshState(state.isRefreshing),
-        onRefresh = onRefresh
+        state = rememberSwipeRefreshState(state.isRefreshing), onRefresh = onRefresh
     ) {
         val todos = state.data.toMutableStateList()
         if (todos.isEmpty()) {
@@ -175,18 +169,15 @@ private fun CustomAnimatedVisibility(
     content: @Composable AnimatedVisibilityScope.() -> Unit,
 ) {
     AnimatedVisibility(
-        visible = !visible,
-        exit = shrinkVertically(
+        visible = !visible, exit = shrinkVertically(
             animationSpec = tween(
                 durationMillis = 300,
             )
-        ),
-        enter = expandVertically(
+        ), enter = expandVertically(
             animationSpec = tween(
                 durationMillis = 300
             )
-        ),
-        content = content
+        ), content = content
     )
 }
 

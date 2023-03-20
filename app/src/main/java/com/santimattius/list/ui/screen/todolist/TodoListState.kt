@@ -6,6 +6,7 @@ data class TodoListState(
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,
     val hasError: Boolean = false,
+    val newFlowEnable: Boolean = false,
     val data: List<TodoItem> = emptyList(),
 )
 
