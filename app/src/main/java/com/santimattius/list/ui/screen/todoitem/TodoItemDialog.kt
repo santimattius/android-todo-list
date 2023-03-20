@@ -121,9 +121,7 @@ private fun TextInput(
     value: String,
     placeHolder: String = "",
     onValueChange: (String) -> Unit,
-    error: String = "",
 ) {
-    val errorColor = if (error.isEmpty()) R.color.purple_200 else R.color.purple_500
 
     TextField(
         modifier = Modifier
@@ -131,7 +129,7 @@ private fun TextInput(
             .border(
                 BorderStroke(
                     width = 1.dp,
-                    color = colorResource(id = errorColor)
+                    color = MaterialTheme.colors.primaryVariant
                 ),
                 shape = RoundedCornerShape(8.dp)
             ),
