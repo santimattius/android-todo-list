@@ -49,4 +49,8 @@ class TodoViewModel @Inject constructor(
             state = state.copy(isRefreshing = false)
         }
     }
+
+    fun report(){
+        throw RuntimeException("First Test Crash")
+    }
 }

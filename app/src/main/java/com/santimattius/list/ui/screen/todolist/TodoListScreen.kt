@@ -25,7 +25,9 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color.Companion.Green
 import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.graphics.Color.Companion.Red
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -43,9 +45,13 @@ fun TodoListRoute(
     val currentState = todoViewModel.state
 
     TodoListScreen(
-        state = currentState, onTodoItemClick = {
+        state = currentState,
+        onTodoItemClick = {
             onTodoItemClick(it, currentState.newFlowEnable)
-        }, onTodoItemDelete = todoViewModel::removeItem, onRefresh = todoViewModel::refresh
+        },
+        onTodoItemDelete = todoViewModel::removeItem,
+        onRefresh = todoViewModel::refresh,
+        onReport = todoViewModel::report
     )
 }
 
@@ -56,9 +62,20 @@ private fun TodoListScreen(
     onRefresh: () -> Unit,
     onTodoItemClick: (TodoItem) -> Unit = {},
     onTodoItemDelete: (TodoItem) -> Unit = {},
+    onReport: () -> Unit = {},
 ) {
+
     Scaffold(topBar = {
-        TodoAppBar(title = stringResource(id = R.string.app_name))
+        TodoAppBar(
+            title = stringResource(id = R.string.app_name),
+            actions = listOf(
+                AppBarItem(
+                    icon = ImageVector.vectorResource(id = R.drawable.bug_report),
+                    contentDescription = "Report",
+                    action = onReport
+                )
+            )
+        )
     }, floatingActionButton = {
         FloatingActionButton(onClick = {
             onTodoItemClick(TodoItem.empty())
