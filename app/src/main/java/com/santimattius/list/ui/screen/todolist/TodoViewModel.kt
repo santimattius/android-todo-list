@@ -5,6 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.crashlytics.ktx.setCustomKeys
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.santimattius.list.domain.GetTodoItems
 import com.santimattius.list.domain.RemoveTodoItem
@@ -50,7 +53,14 @@ class TodoViewModel @Inject constructor(
         }
     }
 
-    fun report(){
-        throw RuntimeException("First Test Crash")
+    fun report() {
+        Firebase.crashlytics.setCustomKeys {
+            key("action", "click_on_report_button")
+        }
+        methodThatThrows()
+    }
+
+    private fun methodThatThrows() {
+        throw RuntimeException("Custom Test Crash")
     }
 }
