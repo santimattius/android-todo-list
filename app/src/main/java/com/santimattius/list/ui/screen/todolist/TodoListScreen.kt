@@ -1,9 +1,13 @@
 package com.santimattius.list.ui.screen.todolist
 
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
@@ -11,11 +15,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
+import androidx.compose.material.DismissDirection
+import androidx.compose.material.DismissState
+import androidx.compose.material.DismissValue
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.FractionalThreshold
+import androidx.compose.material.Icon
+import androidx.compose.material.Scaffold
+import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Sort
+import androidx.compose.material.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.toMutableStateList
@@ -32,7 +46,12 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.santimattius.list.R
 import com.santimattius.list.domain.TodoItem
-import com.santimattius.list.ui.components.*
+import com.santimattius.list.ui.components.AppBarItem
+import com.santimattius.list.ui.components.EmptyView
+import com.santimattius.list.ui.components.ErrorView
+import com.santimattius.list.ui.components.LoadingIndicator
+import com.santimattius.list.ui.components.TodoAppBar
+import com.santimattius.list.ui.components.TodoItemCard
 
 @ExperimentalMaterialApi
 @Composable
@@ -44,7 +63,8 @@ fun TodoListRoute(
         state = todoViewModel.state,
         onTodoItemClick = onTodoItemClick,
         onTodoItemDelete = todoViewModel::removeItem,
-        onRefresh = todoViewModel::refresh
+        onRefresh = todoViewModel::refresh,
+        onSortList = todoViewModel::sort
     )
 }
 
@@ -55,10 +75,19 @@ private fun TodoListScreen(
     onRefresh: () -> Unit,
     onTodoItemClick: (TodoItem) -> Unit = {},
     onTodoItemDelete: (TodoItem) -> Unit = {},
+    onSortList: () -> Unit = {},
 ) {
     Scaffold(
         topBar = {
-            TodoAppBar(title = stringResource(id = R.string.app_name))
+            TodoAppBar(
+                title = stringResource(id = R.string.app_name),
+                actions = listOf(
+                    AppBarItem(
+                        icon = Icons.Default.Sort,
+                        contentDescription = "Sort list",
+                        action = onSortList
+                    )
+                ))
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -101,6 +130,7 @@ private fun TodoListContent(
                 message = stringResource(R.string.text_msg_error_list),
                 modifier = modifier
             )
+
             isEmpty -> EmptyView(modifier = modifier)
             else -> ListItems(
                 state = state,

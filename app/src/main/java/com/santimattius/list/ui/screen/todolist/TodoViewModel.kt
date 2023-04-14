@@ -10,7 +10,6 @@ import com.santimattius.list.domain.RemoveTodoItem
 import com.santimattius.list.domain.TodoItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -48,5 +47,9 @@ class TodoViewModel @Inject constructor(
             delay(1_000)
             state = state.copy(isRefreshing = false)
         }
+    }
+
+    fun sort() {
+        throw RuntimeException("Simulate crash")
     }
 }

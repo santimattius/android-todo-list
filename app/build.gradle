@@ -5,6 +5,9 @@ plugins {
     id 'dagger.hilt.android.plugin'
 }
 
+def localProperties = new Properties()
+localProperties.load(new FileInputStream(rootProject.file("./local.properties")))
+
 android {
     compileSdk 33
 
@@ -19,6 +22,7 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+        buildConfigField "String", "INSTABUG_KEY", "\"${localProperties['instabugKey']}\""
     }
 
     buildTypes {
@@ -87,6 +91,9 @@ dependencies {
 
     //Lottie
     implementation "com.airbnb.android:lottie-compose:$lottie_version"
+
+    //Instabug
+    implementation 'com.instabug.library:instabug:11.11.0'
 
     //Unit testing
     testImplementation 'junit:junit:4.+'
